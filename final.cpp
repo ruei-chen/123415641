@@ -125,6 +125,7 @@ private:
 
     void clearClusters()
     {
+        // #pragma omp parallel for num_threads(8)
         for (int i = 0; i < K; i++)
         {
             clusters[i].removeAllPoints();
@@ -242,6 +243,7 @@ public:
             clearClusters();
 
             // reassign points to their new clusters
+            // #pragma omp parallel for num_threads(8)
             for (int i = 0; i < total_points; i++)
             {
                 // cluster index is ID-1
@@ -249,6 +251,7 @@ public:
             }
 
             // Recalculating the center of each cluster
+            // #pragma omp parallel for num_threads(8)
             for (int i = 0; i < K; i++)
             {
                 int ClusterSize = clusters[i].getSize();
@@ -308,18 +311,17 @@ public:
         {
             cout << "Error: Unable to write to clusters.txt\n";
         }
-        int type;
-        double cluster_value, point_value, distance;
         double sum = 0;
 
+#pragma omp parallel for reduction(+ : sum) num_threads(8)
         for (int i = 0; i < total_points; i++)
         {
-            type = all_points[i].getCluster();
-            distance = 0;
+            int type = all_points[i].getCluster();
+            double distance = 0;
             for (int j = 0; j < dimensions; j++)
             {
-                cluster_value = clusters[type - 1].getCentroidByPos(j);
-                point_value = all_points[i].getVal(j);
+                double cluster_value = clusters[type - 1].getCentroidByPos(j);
+                double point_value = all_points[i].getVal(j);
                 distance += std::pow(cluster_value - point_value, 2);
             }
             distance = std::sqrt(distance);
@@ -328,7 +330,7 @@ public:
         cout << sum << endl;
         if (outfile.is_open())
         {
-            outfile << "distance : " << sum;
+            outfile << "Inertia distance : " << sum;
             outfile.close();
         }
     }
@@ -336,7 +338,6 @@ public:
 
 int main(int argc, char **argv)
 {
-    auto start_time = high_resolution_clock::now();
     // Need 3 arguments (except filename) to run, else exit
     if (argc != 4)
     {
@@ -414,14 +415,18 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    auto start_time = high_resolution_clock::now();
+
     // Running K-Means Clustering
     int iters = 100;
     vector<Cluster> clusters;
 
+#pragma omp parallel for num_threads(8)
     for (int i = 3; i <= K; i++)
     {
+        vector<Point> local_points = all_points;
         KMeans kmeans(i, iters, output_dir);
-        kmeans.run(all_points);
+        kmeans.run(local_points);
     }
 
     auto end_time = high_resolution_clock::now();
