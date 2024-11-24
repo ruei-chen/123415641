@@ -225,7 +225,7 @@ public:
             bool done = true;
 
 // Add all points to their nearest cluster
-#pragma omp parallel for reduction(&& : done) num_threads(20)
+#pragma omp parallel for reduction(&& : done) num_threads(8)
             for (int i = 0; i < total_points; i++)
             {
                 int currentClusterId = all_points[i].getCluster();
@@ -258,7 +258,7 @@ public:
                     double sum = 0.0;
                     if (ClusterSize > 0)
                     {
-#pragma omp parallel for reduction(+ : sum) num_threads(20)
+#pragma omp parallel for reduction(+ : sum) num_threads(8)
                         for (int p = 0; p < ClusterSize; p++)
                         {
                             sum += clusters[i].getPoint(p).getVal(j);
@@ -303,11 +303,33 @@ public:
                 cout << endl;
                 outfile << endl;
             }
-            outfile.close();
         }
         else
         {
             cout << "Error: Unable to write to clusters.txt\n";
+        }
+        int type;
+        double cluster_value, point_value, distance;
+        double sum = 0;
+
+        for (int i = 0; i < total_points; i++)
+        {
+            type = all_points[i].getCluster();
+            distance = 0;
+            for (int j = 0; j < dimensions; j++)
+            {
+                cluster_value = clusters[type - 1].getCentroidByPos(j);
+                point_value = all_points[i].getVal(j);
+                distance += std::pow(cluster_value - point_value, 2);
+            }
+            distance = std::sqrt(distance);
+            sum += distance;
+        }
+        cout << sum << endl;
+        if (outfile.is_open())
+        {
+            outfile << "distance : " << sum;
+            outfile.close();
         }
     }
 };
@@ -394,9 +416,13 @@ int main(int argc, char **argv)
 
     // Running K-Means Clustering
     int iters = 100;
+    vector<Cluster> clusters;
 
-    KMeans kmeans(K, iters, output_dir);
-    kmeans.run(all_points);
+    for (int i = 3; i <= K; i++)
+    {
+        KMeans kmeans(i, iters, output_dir);
+        kmeans.run(all_points);
+    }
 
     auto end_time = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(end_time - start_time);
