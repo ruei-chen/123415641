@@ -226,7 +226,7 @@ public:
             bool done = true;
 
 // Add all points to their nearest cluster
-#pragma omp parallel for reduction(&& : done) num_threads(8)
+#pragma omp parallel for reduction(&& : done) num_threads(4)
             for (int i = 0; i < total_points; i++)
             {
                 int currentClusterId = all_points[i].getCluster();
@@ -261,7 +261,7 @@ public:
                     double sum = 0.0;
                     if (ClusterSize > 0)
                     {
-#pragma omp parallel for reduction(+ : sum) num_threads(8)
+#pragma omp parallel for reduction(+ : sum) num_threads(4)
                         for (int p = 0; p < ClusterSize; p++)
                         {
                             sum += clusters[i].getPoint(p).getVal(j);
@@ -313,7 +313,7 @@ public:
         }
         double sum = 0;
 
-#pragma omp parallel for reduction(+ : sum) num_threads(8)
+        // #pragma omp parallel for reduction(+ : sum) num_threads(8)
         for (int i = 0; i < total_points; i++)
         {
             int type = all_points[i].getCluster();
@@ -379,7 +379,7 @@ int main(int argc, char **argv)
         vector<string> row;
 
         // 使用 ',' 作为分隔符来分割每一列
-        while (getline(ss, cell, ','))
+        while (getline(ss, cell, '\t'))
         {                        // 使用 '\t' 作为分隔符（制表符，适应你的数据格式）
             row.push_back(cell); // 将每列的数据存入 vector
         }
@@ -391,9 +391,13 @@ int main(int argc, char **argv)
             // string age = row[2]; // 第 3 列（Age）
             // string Annual_Income = row[3];
             // string spendingScore = row[4]; // 第 5 列（Spending Score）
-            string combined = row[2];
-            for (int i = 3; i < row.size() - 1; i++)
+            string combined = row[4];
+            for (int i = 5; i < row.size() - 1; i++)
             {
+                if (i == 7 || i >= 20)
+                {
+                    continue;
+                }
                 combined = combined + " " + row[i];
             }
 
@@ -411,7 +415,7 @@ int main(int argc, char **argv)
     // Return if number of clusters > number of points
     if ((int)all_points.size() < K)
     {
-        cout << "Error: Number of clusters greater than number of points." << endl;
+        cout << "Error: Number of clusters greater than number of points." << all_points.size() << endl;
         return 1;
     }
 
@@ -421,7 +425,7 @@ int main(int argc, char **argv)
     int iters = 100;
     vector<Cluster> clusters;
 
-#pragma omp parallel for num_threads(8)
+    // #pragma omp parallel for num_threads(4)
     for (int i = 3; i <= K; i++)
     {
         vector<Point> local_points = all_points;
