@@ -225,19 +225,40 @@ public:
             cout << "Iter - " << iter << "/" << iters << endl;
             bool done = true;
 
-// Add all points to their nearest cluster
-#pragma omp parallel for reduction(&& : done) num_threads(4)
-            for (int i = 0; i < total_points; i++)
-            {
-                int currentClusterId = all_points[i].getCluster();
-                int nearestClusterId = getNearestClusterId(all_points[i]);
+            // Add all points to their nearest cluster
+            // #pragma omp parallel for reduction(&& : done) num_threads(4)
+            //             for (int i = 0; i < total_points; i++)
+            //             {
+            //                 int currentClusterId = all_points[i].getCluster();
+            //                 int nearestClusterId = getNearestClusterId(all_points[i]);
 
-                if (currentClusterId != nearestClusterId)
+            //                 if (currentClusterId != nearestClusterId)
+            //                 {
+            //                     all_points[i].setCluster(nearestClusterId);
+            //                     done = false;
+            //                 }
+            //             }
+            std::vector<bool> thread_done(omp_get_max_threads(), true);
+#pragma omp parallel num_threads(4)
+            {
+                int tid = omp_get_thread_num();
+#pragma omp for schedule(guided, 16)
+                for (int i = 0; i < total_points; i++)
                 {
-                    all_points[i].setCluster(nearestClusterId);
-                    done = false;
+                    int currentClusterId = all_points[i].getCluster();
+                    int nearestClusterId = getNearestClusterId(all_points[i]);
+
+                    if (currentClusterId != nearestClusterId)
+                    {
+                        all_points[i].setCluster(nearestClusterId);
+                        thread_done[tid] = false;
+                    }
                 }
             }
+
+            // 最後檢查所有線程結果
+            done = std::all_of(thread_done.begin(), thread_done.end(), [](bool d)
+                               { return d; });
 
             // clear all existing clusters
             clearClusters();
@@ -256,17 +277,23 @@ public:
             {
                 int ClusterSize = clusters[i].getSize();
 
-                for (int j = 0; j < dimensions; j++)
+                if (ClusterSize > 0)
                 {
-                    double sum = 0.0;
-                    if (ClusterSize > 0)
+                    std::vector<double> sums(dimensions, 0.0);
+
+#pragma omp parallel for schedule(guided, 16) num_threads(4)
+                    for (int p = 0; p < ClusterSize; p++)
                     {
-#pragma omp parallel for reduction(+ : sum) num_threads(4)
-                        for (int p = 0; p < ClusterSize; p++)
+                        auto point = clusters[i].getPoint(p); // 快取點資料
+                        for (int j = 0; j < dimensions; j++)
                         {
-                            sum += clusters[i].getPoint(p).getVal(j);
+                            sums[j] += point.getVal(j); // 快取訪問
                         }
-                        clusters[i].setCentroidByPos(j, sum / ClusterSize);
+                    }
+
+                    for (int j = 0; j < dimensions; j++)
+                    {
+                        clusters[i].setCentroidByPos(j, sums[j] / ClusterSize);
                     }
                 }
             }
