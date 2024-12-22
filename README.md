@@ -8,6 +8,11 @@ Intel(R) Core(TM) i5-13500 CPU
 32GB RAM and
 GeForce RTX 4060 8GB.
 
+Enter the specified folder
+```
+$ cd parallel_kmeans
+```
+
 Dataset : marketing_campaign.csv
 
 Content
@@ -37,10 +42,6 @@ NumWebPurchases - number of purchases made through company’s web site<br>
 NumWebVisitsMonth - number of visits to company’s web site in the last month<br>
 Recency - number of days since the last purchase<br>
 
-Enter the specified folder
-```
-$ cd parallel_kmeans
-```
 Serial : make & implement
 ```
 $ g++ final_serial.cc -o kmeans
@@ -48,19 +49,49 @@ $ ./kmeans marketing_campaign.csv 8 output
 ```
 Openmp : make & implement
 ```
-$ g++ final_openmp1.cpp -o kmeans -fopenmp
+$ g++ -g final_openmp1.cpp -o kmeans -fopenmp
 $ ./kmeans marketing_campaign.csv 8 output
-$ g++ final_openmp2.cpp -o kmeans -fopenmp
+$ g++ -g final_openmp2.cpp -o kmeans -fopenmp
 $ ./kmeans marketing_campaign.csv 8 output
-$ g++ final_openmpsimd.cpp -o kmeans -fopenmp
+$ g++ -g final_openmpsimd.cpp -o kmeans -fopenmp
 $ ./kmeans marketing_campaign.csv 8 output
 ```
 Pthreads : make & implement
 ```
-
+$ g++ -g pthread_test.cc -o kmeans -pthread
+$ ./kmeans marketing_campaign.csv 8 output N (where N is the number of thread)
 ```
 CUDA : make & implement
 ```
-$ nvcc final.cu -o kmeans
+$ nvcc -g final.cu -o kmeans
 $ ./kmeans marketing_campaign.csv 8 output
+```
+
+Due to the original dataset containing too few entries, the time saved by parallelizing specific parts appeared relatively insignificant in the overall execution. Therefore, we generated a dataset with 100,000 entries to validate the effectiveness of our parallelization efforts.
+
+Dataset : 1.csv
+
+Serial : make & implement
+```
+$ g++ -g final_serial_1.cc -o kmeans
+$ ./kmeans 1.csv 6 output
+```
+Openmp : make & implement
+```
+$ g++ -g final_openmp1_1.cpp -o kmeans -fopenmp
+$ ./kmeans 1.csv 6 output
+$ g++ -g final_openmp2_1.cpp -o kmeans -fopenmp
+$ ./kmeans 1.csv 6 output
+$ g++ -g final_openmpsimd_1.cpp -o kmeans -fopenmp
+$ ./kmeans 1.csv 6 output
+```
+Pthreads : make & implement
+```
+$ g++ -g pthread_test_1.cc -o kmeans -pthread
+$ ./kmeans 1.csv 6 output N (where N is the number of thread)
+```
+CUDA : make & implement
+```
+$ nvcc -g final_1.cu -o kmeans
+$ ./kmeans 1.csv 6 output
 ```
