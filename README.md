@@ -73,7 +73,8 @@ $ ./kmeans marketing_campaign.csv 8 output
 
 Due to the original dataset containing too few entries, the time saved by parallelizing specific parts appeared relatively insignificant in the overall execution. Therefore, we generated a dataset with 100,000 entries to validate the effectiveness of our parallelization efforts.
 
-Dataset : 1.csv
+## Dataset : 1.csv
+A total of 100,000 pieces of data with 10 fields
 
 ## Execution process
 
