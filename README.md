@@ -1,6 +1,6 @@
 # Parallelizing K-Means Clustering for Scalable Customer Segmentation
 
-實驗環境
+實驗環境 "\n"
 Ubuntu 22.04 with
 Intel(R) Core(TM) i5-13500 CPU
 @ 2.50GHz processors and
