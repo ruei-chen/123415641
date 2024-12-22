@@ -1,6 +1,6 @@
 # Parallelizing K-Means Clustering for Scalable Customer Segmentation
 
-Evaluation platform 
+## Evaluation platform 
 
 Ubuntu 22.04 with
 Intel(R) Core(TM) i5-13500 CPU
@@ -13,7 +13,7 @@ Enter the specified folder
 $ cd parallel_kmeans
 ```
 
-Dataset : marketing_campaign.csv
+## Dataset : marketing_campaign.csv
 
 Content
 AcceptedCmp1 - 1 if customer accepted the offer in the 1st campaign, 0 otherwise<br>
@@ -42,6 +42,8 @@ NumWebPurchases - number of purchases made through company’s web site<br>
 NumWebVisitsMonth - number of visits to company’s web site in the last month<br>
 Recency - number of days since the last purchase<br>
 
+## Execution process
+
 Serial : make & implement
 ```
 $ g++ final_serial.cc -o kmeans
@@ -67,9 +69,13 @@ $ nvcc -g final.cu -o kmeans
 $ ./kmeans marketing_campaign.csv 8 output
 ```
 
+---------------------------------------------------------------------------------------------------------------------
+
 Due to the original dataset containing too few entries, the time saved by parallelizing specific parts appeared relatively insignificant in the overall execution. Therefore, we generated a dataset with 100,000 entries to validate the effectiveness of our parallelization efforts.
 
 Dataset : 1.csv
+
+## Execution process
 
 Serial : make & implement
 ```
