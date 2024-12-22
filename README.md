@@ -22,8 +22,8 @@ DtCustomer - date of customer’s enrolment with the company<br>
 Education - customer’s level of education<br>
 Marital - customer’s marital status<br>
 Kidhome - number of small children in customer’s household<br>
- Teenhome - number of teenagers in customer’s household<br>
- Income - customer’s yearly household income<br>
+Teenhome - number of teenagers in customer’s household<br>
+Income - customer’s yearly household income<br>
 MntFishProducts - amount spent on fish products in the last 2 years<br>
 MntMeatProducts - amount spent on meat products in the last 2 years<br>
 MntFruits - amount spent on fruits products in the last 2 years<br>
