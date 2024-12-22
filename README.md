@@ -1,6 +1,6 @@
 # Parallelizing K-Means Clustering for Scalable Customer Segmentation
 
-實驗環境 
+Evaluation platform 
 
 Ubuntu 22.04 with
 Intel(R) Core(TM) i5-13500 CPU
@@ -8,15 +8,20 @@ Intel(R) Core(TM) i5-13500 CPU
 32GB RAM and
 GeForce RTX 4060 8GB.
 
+Dataset : marketing_campaign.csv
+
+
+
+進入指定folder
 ```
 $ cd parallel_kmeans
 ```
-Serial
+Serial : make & implement
 ```
 $ g++ final_serial.cc -o kmeans
 $ ./kmeans marketing_campaign.csv 8 output
 ```
-Openmp
+Openmp : make & implement
 ```
 $ g++ final_openmp1.cpp -o kmeans -fopenmp
 $ ./kmeans marketing_campaign.csv 8 output
@@ -25,11 +30,11 @@ $ ./kmeans marketing_campaign.csv 8 output
 $ g++ final_openmpsimd.cpp -o kmeans -fopenmp
 $ ./kmeans marketing_campaign.csv 8 output
 ```
-Pthreads
+Pthreads : make & implement
 ```
 
 ```
-CUDA
+CUDA : make & implement
 ```
 $ nvcc final.cu -o kmeans
 $ ./kmeans marketing_campaign.csv 8 output
