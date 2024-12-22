@@ -37,7 +37,7 @@ NumWebPurchases - number of purchases made through company’s web site<br>
 NumWebVisitsMonth - number of visits to company’s web site in the last month<br>
 Recency - number of days since the last purchase<br>
 
-進入指定folder
+Enter the specified folder
 ```
 $ cd parallel_kmeans
 ```
